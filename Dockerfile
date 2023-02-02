@@ -1,17 +1,18 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 
-# copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["VidFluentAI.csproj", "./"]
+RUN dotnet restore "VidFluentAI.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "VidFluentAI.csproj" -c Release -o /app/build
 
-# copy everything else and build
-COPY . ./
-RUN apt-get update && apt-get install -y libcurl3
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "VidFluentAI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "aspnetapp.dll"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "VidFluentAI.dll"]
