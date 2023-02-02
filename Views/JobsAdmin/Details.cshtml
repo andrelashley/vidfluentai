@@ -1,0 +1,30 @@
+﻿@model VidFluentAI.Models.Job
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Job</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            YouTube Url
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Input)
+        </dd>
+        <dt class = "col-sm-2">
+            Tweet/Transcript
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Output)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
